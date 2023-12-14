@@ -1,0 +1,138 @@
+# nonlinear_solver/equation_solver.ipynb
+import numpy as np
+
+class EquationSolver:
+    def __init__(self, equation, derivative=None, transformation_function=None):
+        self.equation = equation
+        self.derivative = derivative
+        self.transformation_function = transformation_function
+        self.golden_ratio = (1 + np.sqrt(5)) / 2  # Золотий перетин
+
+    def solve_bisection(self, a, b, tolerance=1e-6, max_iterations=100):
+        """
+        Solves the nonlinear equation using the bisection method.
+
+        Parameters:
+        - a, b: Initial interval [a, b] for the solution.
+        - tolerance: The desired accuracy of the solution.
+        - max_iterations: Maximum number of iterations.
+
+        Returns:
+        - root: The approximate root of the equation.
+        - iterations: The number of iterations performed.
+        """
+        if self.equation(a) * self.equation(b) > 0:
+            raise ValueError("The function values at the interval endpoints must have opposite signs.")
+
+        iterations = 0
+        while (b - a) / 2 > tolerance and iterations < max_iterations:
+            c = (a + b) / 2
+            if self.equation(c) == 0:
+                return c, iterations
+            elif self.equation(c) * self.equation(a) < 0:
+                b = c
+            else:
+                a = c
+            iterations += 1
+
+        root = (a + b) / 2
+        return root, iterations
+
+    def solve_newton(self, initial_guess, tolerance=1e-6, max_iterations=100):
+        """
+        Solves the nonlinear equation using Newton's method.
+
+        Parameters:
+        - initial_guess: Initial guess for the root.
+        - tolerance: The desired accuracy of the solution.
+        - max_iterations: Maximum number of iterations.
+
+        Returns:
+        - root: The approximate root of the equation.
+        - iterations: The number of iterations performed.
+        """
+        x = initial_guess
+        iterations = 0
+
+        while np.abs(self.equation(x)) > tolerance and iterations < max_iterations:
+            x = x - self.equation(x) / self.derivative(x)
+            iterations += 1
+
+        return x, iterations
+
+    def solve_fixed_point_iteration(self, initial_guess, tolerance=1e-6, max_iterations=100):
+        """
+        Solves the nonlinear equation using the fixed-point iteration method.
+
+        Parameters:
+        - initial_guess: Initial guess for the root.
+        - tolerance: The desired accuracy of the solution.
+        - max_iterations: Maximum number of iterations.
+
+        Returns:
+        - root: The approximate root of the equation.
+        - iterations: The number of iterations performed.
+        """
+        x = initial_guess
+        iterations = 0
+
+        while np.abs(self.equation(x)) > tolerance and iterations < max_iterations:
+            x = self.transformation_function(x)
+            iterations += 1
+
+        return x, iterations
+
+    def solve_golden_ratio(self, a, b, tolerance=1e-6, max_iterations=100):
+        """
+        Solves the nonlinear equation using the golden ratio method.
+
+        Parameters:
+        - a, b: Initial interval [a, b] for the solution.
+        - tolerance: The desired accuracy of the solution.
+        - max_iterations: Maximum number of iterations.
+
+        Returns:
+        - root: The approximate root of the equation.
+        - iterations: The number of iterations performed.
+        """
+        if self.equation(a) * self.equation(b) > 0:
+            raise ValueError("The function values at the interval endpoints must have opposite signs.")
+
+        c = b - (b - a) / self.golden_ratio
+        d = a + (b - a) / self.golden_ratio
+        iterations = 0
+
+        while (b - a) > tolerance and iterations < max_iterations:
+            if self.equation(c) < self.equation(d):
+                b = d
+            else:
+                a = c
+
+            c = b - (b - a) / self.golden_ratio
+            d = a + (b - a) / self.golden_ratio
+            iterations += 1
+
+        root = (a + b) / 2
+        return root, iterations
+
+    def solve_secant(self, x0, x1, tolerance=1e-6, max_iterations=100):
+        """
+        Solves the nonlinear equation using the secant method.
+
+        Parameters:
+        - x0, x1: Initial points for the secant line.
+        - tolerance: The desired accuracy of the solution.
+        - max_iterations: Maximum number of iterations.
+
+        Returns:
+        - root: The approximate root of the equation.
+        - iterations: The number of iterations performed.
+        """
+        iterations = 0
+
+        while np.abs(self.equation(x1)) > tolerance and iterations < max_iterations:
+            x2 = x1 - self.equation(x1) * (x1 - x0) / (self.equation(x1) - self.equation(x0))
+            x0, x1 = x1, x2
+            iterations += 1
+
+        return x1, iterations
