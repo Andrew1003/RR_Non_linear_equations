@@ -1,0 +1,33 @@
+from nonlinear_solver.equation_solver import EquationSolver
+from nonlinear_solver.visualization import FunctionPlotter
+
+def main():
+    # Input the equation
+    plotter = FunctionPlotter()
+    equation = plotter.input_equation()
+
+    # Input the interval for the solution
+    a = float(input("Enter the lower bound of the interval: "))
+    b = float(input("Enter the upper bound of the interval: "))
+
+    # Visualize the function
+    plotter.plot_function(equation, a, b)
+
+    # Create an EquationSolver object
+    solver = EquationSolver(equation)
+
+    # Solve the equation using different methods
+    root_bisection, iterations_bisection = solver.solve_bisection(a, b)
+    root_newton, iterations_newton = solver.solve_newton(initial_guess=(a + b) / 2)
+    root_fixed_point, iterations_fixed_point = solver.solve_fixed_point_iteration(initial_guess=(a + b) / 2)
+
+    # Print the results
+    print(f"Bisection Method: Root = {root_bisection}, Iterations = {iterations_bisection}")
+    print(f"Newton's Method: Root = {root_newton}, Iterations = {iterations_newton}")
+    print(f"Fixed-Point Iteration Method: Root = {root_fixed_point}, Iterations = {iterations_fixed_point}")
+
+    # Visualize iterations for the chosen method
+    # plotter.plot_iteration_history(iterations_history)
+
+if __name__ == "__main__":
+    main()
