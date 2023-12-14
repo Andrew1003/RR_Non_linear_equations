@@ -1,0 +1,50 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+class FunctionPlotter:
+    def __init__(self):
+        pass
+
+    def input_equation(self) -> callable:
+        """
+        Allows the user to input an equation as a string.
+
+        Returns:
+        - A lambda function representing the entered equation.
+        """
+        equation_str = input("Enter the equation (use 'x' as the variable): ")
+        return lambda x: eval(equation_str)
+
+    def plot_function(self, equation: callable, a: float, b: float, points: int = 100) -> None:
+        """
+        Plots the given equation in the specified interval.
+
+        Parameters:
+        - equation: The equation to be plotted.
+        - a, b: The interval [a, b] for the plot.
+        - points: The number of points to generate for the plot.
+        """
+        x_values = np.linspace(a, b, points)
+        y_values = equation(x_values)
+
+        plt.plot(x_values, y_values, label="Function")
+        plt.axhline(0, color='black', linewidth=0.5)
+        plt.axvline(0, color='black', linewidth=0.5)
+        plt.title("Function Plot")
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.legend()
+        plt.show()
+
+    def plot_iteration_history(self, iterations_history: list) -> None:
+        """
+        Plots the iteration history of a root-finding method.
+
+        Parameters:
+        - iterations_history: A list containing the values of the root at each iteration.
+        """
+        plt.plot(iterations_history, marker='o', linestyle='-', color='b')
+        plt.title("Iteration History")
+        plt.xlabel("Iteration")
+        plt.ylabel("Root Value")
+        plt.show()
